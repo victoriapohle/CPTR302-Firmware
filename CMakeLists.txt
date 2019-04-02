@@ -1,25 +1,16 @@
-
 PROJECT (Firmware LANGUAGES CSharp)
 CMAKE_MINIMUM_REQUIRED ( VERSION 3.12)
 set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
-
 add_library (Firmware SHARED Firmware.cs CommandType.cs App.config Properties/AssemblyInfo.cs)
 
-add_dependencies(Firmware Hardware)	
+add_custom_command(TARGET ${PROJECT_NAME} 
+	PRE_BUILD
+	COMMAND nuget install CPTR302VictoriaPohleHardware -version 1.0.0 -OutputDirectory ${CMAKE_BINARY_DIR}
+	)
 
-set(CMAKE_CSharp_FLAGS "/langversion:7") 
+set_property(TARGET Firmware PROPERTY VS_DOTNET_REFERENCES  "CPTR302VictoriaPohleHardware.1.0.0/lib/net452/CPTR302VictoriaPohleHardware.dll" )
 
-include(ExternalProject)
-ExternalProject_Add(Hardware
-PREFIX ${CMAKE_BINARY_DIR}
-GIT_REPOSITORY "https://github.com/dantmw/3DPrinterSIMHardware.git"
-PATCH_COMMAND ""
-BINARY_DIR ${CMAKE_BINARY_DIR}/Hardware
-SOURCE_DIR ${CMAKE_BINARY_DIR}/Hardware
-INSTALL_DIR ${CMAKE_BINARY_DIR}/Hardware
-CONFIGURE_COMMAND ""
-BUILD_COMMAND ""
-INSTALL_COMMAND ""
-)
+set(CMAKE_CSharp_FLAGS "/langversion:7")
 
-set_property(TARGET Firmware PROPERTY VS_DOTNET_REFERENCES "Hardware/bin/Release/Hardware.dll" )
+ 
+
